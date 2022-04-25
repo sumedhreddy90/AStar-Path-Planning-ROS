@@ -1,0 +1,23 @@
+<launch>
+    
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="start_location" default="[1,1,90]"/>
+  <arg name="goal_location" default="[4,7,0]"/>
+  <arg name="clearance" default="0.1"/>
+  <arg name="RPM" default="[3,3]"/>  
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find astarplanning)/world/my_map.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <param name="robot_description" command="$(find xacro)/xacro $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+    
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model turtlebot3_$(arg model) -param robot_description" />
+  <node name="astarTurtle" pkg="astarplanning" type="astarTurtle.py" args="--start_location=$(arg start_location)  --goal_location=$(arg goal_location) --clearance=$(arg clearance) --RPM=$(arg RPM)" output="screen"/>
+
+</launch>
